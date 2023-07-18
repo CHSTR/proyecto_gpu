@@ -2,14 +2,6 @@
 <html lang="en">
   <head>
     <title>FaceAPI Live WebCam Demo</title>
-    <style>
-      #video {
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: -1;
-      }
-    </style>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, shrink-to-fit=yes">
     <meta name="application-name" content="FaceAPI">
@@ -17,10 +9,25 @@
     <meta name="description" content="FaceAPI: AI-powered Face Detection, Description & Recognition for Browser and NodeJS using Tensorflow/JS; Author: Vladimir Mandic <https://github.com/vladmandic>">
     <meta name="msapplication-tooltip" content="FaceAPI: AI-powered Face Detection, Description & Recognition for Browser and NodeJS using Tensorflow/JS; Author: Vladimir Mandic <https://github.com/vladmandic>">
     <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <h1>FaceMesh(Voronoi): <code>tensorflow.js</code> + <code>three.js</code></h1>
+
+    <h4>&nbsp;&nbsp;&nbsp;Equipo > Cristóbal Alcázar, Christopher Stears</h4>
+
+    <p> En este proyecto final utilizamos la GPU con un modelo entrenado para la tarea de detectar caras en imágenes, ...</p>
+
+    <div id="video-container">
+        <video id="video" playsinline class="video"></video>
+        <canvas id="canvas" class="canvas"></canvas>
+        <div id="log"></div>
+        <div id="points-container"></div>
+    </div>      
+
     <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
     <script src="https://unpkg.dev/@vladmandic/face-api/dist/face-api.js"></script>
-
     <script type="importmap">
         {
           "imports": {
@@ -28,92 +35,7 @@
             "three/addons/": "https://unpkg.com/three@v0.154.0/examples/jsm/"
           }
         }
-      </script>
-</head>
-<body>
-    <div id="video-container">
-        <video id="video" playsinline class="video"></video>
-        <canvas id="canvas" class="canvas"></canvas>
-        <div id="log"></div>
-        <div id="points-container"></div>
-      </div>      
-</body>
-<script src="./webcam.js" type="module"></script>
-<!-- add css -->
-<style>
-#video-container {
-  position: relative;
-  width: 100%;
-  height: auto;
-}
-
-.canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-}
-
-#points-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.point {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  background-color: red;
-  border-radius: 50%;
-}
-</style>
+    </script>
+    <script src="./webcam.js" type="module"></script>
+  </body>
 </html>
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Simple Three.js Example</title>
-  <style>
-    body { margin: 0; overflow: hidden; }
-    canvas { display: block; }
-  </style>
-</head>
-<body>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
-  <script>
-    // Crear una escena en Three.js
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
-
-    // Crear un punto
-    const pointSize = 10;
-    const material = new THREE.PointsMaterial({ color: 0xffffff, size: pointSize });
-    const geometry = new THREE.BufferGeometry();
-    const positions = [];
-    positions.push(500, 800 , 0); // Coordenadas del punto (0, 0, 0)
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-
-    const point = new THREE.Points(geometry, material);
-    scene.add(point);
-
-    // Posicionar la cámara
-    camera.position.z = 1000;
-
-    // Función de renderizado
-    function render() {
-      requestAnimationFrame(render);
-      renderer.render(scene, camera);
-    }
-
-    // Llamar a la función de renderizado para iniciar el bucle de renderizado
-    render();
-  </script>
-</body>
-</html> -->

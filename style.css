@@ -1,0 +1,57 @@
+body {
+    font-family: garamond-premier-pro, serif;
+    font-weight: 400;
+    margin: 2em;
+    color: #3D3D3D;
+    background-color: #eee;
+}
+
+h1 {
+    font-style: garamond-premier-pro, serif;
+    font-weight: 600;
+    letter-spacing: .1em;
+    color: #3D3D3D;
+}
+
+h4 {
+    font-style: garamond-premier-pro, serif;
+    font-weight: 400;
+    letter-spacing: .1em;
+    color: #3D3D3D;
+}
+
+#video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+#video-container {
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+
+.canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+#points-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.point {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: red;
+  border-radius: 50%;
+}
