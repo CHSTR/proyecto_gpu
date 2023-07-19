@@ -1,12 +1,14 @@
 body {
-    font-family: garamond-premier-pro, serif;
-    font-weight: 400;
+    font-weight: 300;
     margin: 2em;
     color: #3D3D3D;
     background-color: #eee;
+    //background: linear-gradient(to bottom, #f0f0f0, #d8d8d8);
 }
 
 h1 {
+    margin-top: 40px;
+    //font-family: garamond-premier-pro, serif;
     font-style: garamond-premier-pro, serif;
     font-weight: 600;
     letter-spacing: .1em;
@@ -20,11 +22,20 @@ h4 {
     color: #3D3D3D;
 }
 
+p {
+    font-family: 'Helvetica neue', sans-serif;
+    font-size: 1.0em;
+}
+
 #video {
     position: absolute;
+    width: 50%;
     top: 0;
     left: 0;
     z-index: -1;
+    border: 0.9px solid lightslategray;
+    border-radius: 10px;
+    box-shadow: 5px 4px 10px rgba(0, 0, 0, 0.5);
 }
 
 #video-container {
