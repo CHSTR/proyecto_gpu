@@ -1,19 +1,19 @@
 // Funciones auxiliares para el proyecto
-import * as THREE from 'three';
+import * as THREE from 'https://unpkg.com/three@v0.154.0/build/three.module.js';
 
 // helper function to pretty-print json object to string
 function str(json) {
-    let text = '<font color="lightblue">';
-    text += json ? JSON.stringify(json).replace(/{|}|"|\[|\]/g, '').replace(/,/g, ', ') : '';
-    text += '</font>';
-    return text;
+  let text = '<font color="lightblue">';
+  text += json ? JSON.stringify(json).replace(/{|}|"|\[|\]/g, '').replace(/,/g, ', ') : '';
+  text += '</font>';
+  return text;
 }
 
 // helper function to print strings to html document as a log
 function log(...txt) {
-    console.log(...txt); // eslint-disable-line no-console
-    const div = document.getElementById('log');
-    if (div) div.innerHTML += `<br>${txt}`;
+  console.log(...txt); // eslint-disable-line no-console
+  const div = document.getElementById('log');
+  if (div) div.innerHTML += `<br>${txt}`;
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -30,8 +30,8 @@ const positions = [];
 camera.position.z = 1000;
 
 function render() {
-    requestAnimationFrame(render);
-    renderer.render(scene, camera);
+  requestAnimationFrame(render);
+  renderer.render(scene, camera);
 }
 
 render();
@@ -40,25 +40,35 @@ render();
 const gui = new dat.GUI();
 
 const config = {
-    size: 3.0,
-    color: '#000000',
-    delaunay: false,
-    points: true,
+  size: 3.0,
+  color: '#000000',
+  delaunay: false,
+  points: true,
+  cellularNoise: false,
+  scale: 50,
 };
 
 const uniforms = {
-    u_color: { value: new THREE.Color(config.color) },
-    u_size: { value: config.size },
-    u_delaunay: { value: false },
-    u_points: { value: true },
+  u_color: { value: new THREE.Color(config.color) },
+  u_size: { value: config.size },
+  u_delaunay: { value: false },
+  u_points: { value: true },
+  u_grid: { value: false },
+  u_resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+  u_scale: { value: config.scale },
+  u_cellularNoise: { value: false },
 };
 
 const updateSize = () => {
-    uniforms.u_size.value = config.size;
+  uniforms.u_size.value = config.size;
+};
+
+const updateScale = () => {
+  uniforms.u_scale.value = config.scale;
 };
 
 const updateColor = () => {
-    uniforms.u_color.value = new THREE.Color(config.color);
+  uniforms.u_color.value = new THREE.Color(config.color);
 };
 
 Boolean = () => {
@@ -68,17 +78,35 @@ Boolean = () => {
 
 gui.add(config, 'size', 1, 10).step(1).name('Tamaño de puntos').onChange(updateSize);
 gui.addColor(config, 'color').name('Color').onChange(updateColor);
-gui.add(config, 'delaunay').name('Delaunay').onChange(Boolean);
+// gui.add(config, 'delaunay').name('Delaunay').onChange(Boolean);
 gui.add(config, 'points').name('Puntos').onChange(Boolean);
+gui.add(config, 'scale', 1, 100).step(1).name('Escala').onChange(updateScale);
+
+// Control para activar/desactivar el efecto delaunay
+const delaunayControl = gui.add(config, 'delaunay').name('Delaunay');
+delaunayControl.onChange((value) => {
+  uniforms.u_delaunay.value = value;
+  // Habilitar/deshabilitar el control de cellular noise según el valor de u_delaunay
+  cellularNoiseControl.__li.style.pointerEvents = value ? 'auto' : 'none';
+});
+
+// Control para activar/desactivar el efecto de cellular noise
+const cellularNoiseControl = gui.add(config, 'cellularNoise').name('Cellular Noise');
+cellularNoiseControl.onChange((value) => {
+  uniforms.u_cellularNoise.value = value;
+});
+cellularNoiseControl.__li.style.pointerEvents = 'none'; // Inicialmente deshabilitado
+
+// Establecer la opción "Cellular Noise" como dependiente de "Delaunay"
+delaunayControl.listen().onChange((value) => {
+  cellularNoiseControl.__li.style.pointerEvents = value ? 'auto' : 'none';
+});
 
 // Se declaran las variables que se utilizarán para dibujar los landmarks
 var points;
-var mesh; 
 var material;
 
 function renderFaceLandmarks(landmarks) {
-  positions.length = 0;
-
   // Transformar las coordenadas
   const scaledLandmarks = landmarks.map((point) => {
     const { height } = renderer.domElement;
@@ -88,6 +116,7 @@ function renderFaceLandmarks(landmarks) {
     };
   });
 
+  const positions = [];
   scaledLandmarks.forEach((position) => {
     const x = position.x;
     const y = position.y;
@@ -97,7 +126,7 @@ function renderFaceLandmarks(landmarks) {
 
   const geometry = new THREE.BufferGeometry();
 
-  if(config.delaunay) {
+  if (config.delaunay) {
     // Convertir los puntos al formato requerido por d3-delaunay
     const puntosDelaunay = scaledLandmarks.map((punto) => [punto.x, punto.y]);
 
@@ -109,63 +138,85 @@ function renderFaceLandmarks(landmarks) {
     const indices = [];
     for (let i = 0; i < triangulation.length; i += 3) {
       // indices.push(triangulation[i], triangulation[i + 1], triangulation[i + 2]);
-      indices.push(triangulation[i+2], triangulation[i + 1], triangulation[i]);
-    }
-
-    // Crear un arreglo de coordenadas UV
-    const uvs = [];
-    for (let i = 0; i < scaledLandmarks.length; i++) {
-      const { x, y } = scaledLandmarks[i];
-      const u = x / renderer.domElement.width;
-      const v = y / renderer.domElement.height;
-      uvs.push(u, v);
+      indices.push(triangulation[i + 2], triangulation[i + 1], triangulation[i]);
     }
 
     // Crea una geometría para los triángulos utilizando los índices
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    // geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
     geometry.setIndex(indices);
 
-    // Crea un material para los triángulos
-    material = new THREE.MeshBasicMaterial({ color: config.color, wireframe: true });
-    // const textureLoader = new THREE.TextureLoader();
-    // const texture = textureLoader.load('./textura.jpg', (texture) => {
-    //   // Se ejecuta cuando la textura se ha cargado completamente
-
-    //   // Convertir las coordenadas UV del d3-delaunay a formato Three.js
-    //   // const uvs = scaledLandmarks.map((punto) => [punto.x / (renderer.domElement.width), punto.y / (renderer.domElement.height)]);
-
-    //   // Crear la geometría con las coordenadas UV
-    //   const geometry = new THREE.BufferGeometry();
-    //   geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    //   geometry.setAttribute('uv', new THREE.Float32BufferAttribute(puntosDelaunay, 2));
-    //   geometry.setIndex(indices);
-
-    //   // Crear el material con la textura
-    //   const material = new THREE.MeshBasicMaterial({ map: texture });
-
-    //   // Crear la malla con la geometría y el material
-    //   const mesh = new THREE.Mesh(geometry, material);
-
-    //   // Agregar la malla a la escena
-    //   scene.add(mesh);
-    // });
-
-    // material = new THREE.MeshBasicMaterial({ map: texture });
-    // console.log(material)
-
-    if (mesh != null) {
-      scene.remove(mesh);
+    if (config.cellularNoise) {
+      material = new THREE.ShaderMaterial({
+        uniforms: uniforms,
+        fragmentShader: `
+          uniform vec2 u_resolution;
+          uniform float u_scale;
+          uniform vec3 u_color;
+          uniform bool u_grid;
+    
+      
+          vec2 random2(vec2 p) {
+            return fract(sin(vec2(dot(p, vec2(86, 311.7)), dot(p, vec2(269.5, 283.3)))) * 3.1488831);
+          }
+      
+          void main() {
+            vec2 st = gl_FragCoord.xy / u_resolution.xy;
+            st.x *= u_resolution.x / u_resolution.y;
+            vec3 color = u_color;
+      
+            // Escala
+            st *= u_scale;
+      
+            // Espacio de celdas
+            vec2 i_st = floor(st);
+            vec2 f_st = fract(st);
+      
+            float m_dist = 2.0;  // Distancia mínima
+      
+            // Se recorre la vecindad de la celda
+            for (int i = -1; i <= 1; i++) {
+              for (int j = -1; j <= 1; j++) {
+                // Se define la posición del vecino
+                vec2 neighbor = vec2(float(j), float(i));
+      
+                // Se define la posición del punto aleatorio a partir del vecino
+                vec2 point = random2(i_st + neighbor);
+      
+                // Se calcula la distancia entre el punto y el vecino
+                // Se guarda la distancia mínima 
+                vec2 diff = neighbor + point - f_st;
+                float dist = length(diff);
+                m_dist = min(m_dist, dist);
+              }
+            }
+            // Se aplica el color en función de la distancia mínima
+            color += m_dist - 0.1;
+      
+            // Se agrega un color difuso en función a la distancia mínima
+            color += 1. - step(.001, m_dist);
+      
+            // Dibujar grilla
+            if (u_grid) {
+              color.r += step(.98, f_st.x) + step(.98, f_st.y);
+            }
+            
+            // Se aplica el color
+            gl_FragColor = vec4(color, 0.1);
+          }`,
+      });
+    } else {
+      // Crea un material para los triángulos
+      material = new THREE.MeshBasicMaterial({ color: config.color, wireframe: true });
     }
 
     // Crea una malla con la geometría y el material
-    mesh = new THREE.Mesh(geometry, material);
+    const mesh = new THREE.Mesh(geometry, material);
 
     // Agrega la malla a la escena
     scene.add(mesh);
   }
 
-  if(config.points) {
+  if (config.points) {
     // Crear material con shaders personalizados
     material = new THREE.ShaderMaterial({
       uniforms: uniforms,
@@ -190,10 +241,6 @@ function renderFaceLandmarks(landmarks) {
     });
 
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    
-    if (points != null){ 
-      scene.remove(points);
-    }
 
     points = new THREE.Points(geometry, material);
     scene.add(points);
@@ -201,55 +248,25 @@ function renderFaceLandmarks(landmarks) {
 
   // Renderizar la escena utilizando el renderizador
   renderer.render(scene, camera);
-  
-  // // Crear material con shaders personalizados
-  // const material = new THREE.ShaderMaterial({
-  //   uniforms: uniforms,
-  //   vertexShader: `
-  //     uniform vec3 u_color;
-
-  //     void main() {
-  //       vec3 color = u_color;
-  //       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  //     }
-  //   `,
-  //   fragmentShader: `
-  //     uniform vec3 u_color;
-
-  //     void main() {
-  //       vec3 color = u_color;
-  //       gl_FragColor = vec4(color, 1.0);
-  //     }
-  //   `,
-  // });
-
-  // // Eliminar el mesh existente si lo hay
-  // if (mesh != null) {
-  //   scene.remove(mesh);
-  // }
-
-  // // Crear un objeto THREE.Mesh con la geometría y el material
-  // mesh = new THREE.Mesh(geometry, material);
-  // scene.add(mesh);
 }
 
 // helper function to draw face landmarks
 function drawFaces(canvas, data, fps) {
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    if (!ctx) return;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  if (!ctx) return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // draw title
-    ctx.font = 'small-caps 20px "Segoe UI"';
-    ctx.fillStyle = 'white';
-    ctx.fillText(`FPS: ${fps}`, 10, 25);
+  // draw title
+  ctx.font = 'small-caps 20px "Segoe UI"';
+  ctx.fillStyle = 'white';
+  ctx.fillText(`FPS: ${fps}`, 10, 25);
 
-    for (const person of data) {
-        console.log(data.length)
-        renderFaceLandmarks(person.landmarks.positions);
-    }
-    // Limpiar la escena
-    scene.clear();
+  positions.length = 0;
+  for (const person of data) {
+    renderFaceLandmarks(person.landmarks.positions);
+  }
+  // Limpiar la escena
+  scene.clear();
 }
 
 // Exportar funciones

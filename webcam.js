@@ -20,6 +20,7 @@ const reduceSizeWebcam = 0.5;
 
 const fpsData = [];
 const renderTimeData = [];
+const faces = [];
 
 const globalTime = performance.now();
 
@@ -29,9 +30,6 @@ async function detectVideo(video, canvas) {
   faceapi
     .detectAllFaces(video, optionsSSDMobileNet)
     .withFaceLandmarks()
-    // .withFaceExpressions()
-    // .withFaceDescriptors()
-    // .withAgeAndGender()
     .then((result) => {
       const fps = 1000 / (performance.now() - t0);
       fpsData.push(fps);
@@ -41,13 +39,9 @@ async function detectVideo(video, canvas) {
       drawFaces(canvas, result, fps.toLocaleString());
       const t2 = performance.now();
       renderTimeData.push(t2 - t1);
-      
-      // Calcular 30 segundos desde t0
-      // if (performance.now() - globalTime > 30000) {
-      //   // Creamos el formato csv
-      //   const csvContent = `FPS,Time\n${fpsData.join(',')}\n${renderTimeData.join(',')}`;
-      //   appendLineToFile('./fps.csv', csvContent);
-      // }
+      // Se guarda el número de caras detectadas
+      faces.push(result.length);
+
       requestAnimationFrame(() => detectVideo(video, canvas));
       return true;
     })
