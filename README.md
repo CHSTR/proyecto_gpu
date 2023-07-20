@@ -13,36 +13,24 @@ A continuación se muestra un diagrama con el pipeline de la aplicación para de
 
 <img src="./assets/pipeline.png" alt="pipeline-predicción">
 
-## Instrucciones para correr App
-
-TODO: esto ya no va, cierto? Quizás esta bueno mostrar el formato de salida del pipeline de nube de puntos.
-
-```bash
-npm install
-node app.js
-```
+La salida de la red tiene el siguiente formato:
 
 ```
-curl --location --request POST 'http://localhost:3000/process-image' \
---form 'image=@"/path/image/name.jpg"'
-```
-
-La salida tiene el formato:
-
-```
-"landmarks": [
-        [
-            {
-                "_x": 332.833198569715,
-                "_y": 208.07798411437142
-            },
-            {
-                "_x": 335.4965223968029,
-                "_y": 235.8213532764541
-            },
-            ...
-        ]
-]
+{
+    "imageHeight": 134,
+    "imageWidth": 87,
+    "positions": [
+        {
+            "_x": 332.833198569715,
+            "_y": 208.07798411437142
+        },
+        {
+            "_x": 335.4965223968029,
+            "_y": 235.8213532764541
+        },
+        ...
+    ],
+}
 ```
 
 ## Citar
