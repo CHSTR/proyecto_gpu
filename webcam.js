@@ -2,8 +2,26 @@
 import { str, log, drawFaces } from './helper.js';
 import { setupFaceAPI, optionsSSDMobileNet } from './loadModels.js';
 
+
+function appendLineToFile(filePath, line) {
+  const content = line + '\n';
+  const blob = new Blob([content], { type: 'text/plain' });
+
+  const downloadLink = document.createElement('a');
+  downloadLink.href = URL.createObjectURL(blob);
+  downloadLink.download = filePath;
+
+  downloadLink.click();
+  URL.revokeObjectURL(downloadLink.href);
+}
+
 // Variables para manejar el tamaño de la webcam
 const reduceSizeWebcam = 0.5;
+
+const fpsData = [];
+const renderTimeData = [];
+
+const globalTime = performance.now();
 
 async function detectVideo(video, canvas) {
   if (!video || video.paused) return false;
@@ -16,7 +34,20 @@ async function detectVideo(video, canvas) {
     // .withAgeAndGender()
     .then((result) => {
       const fps = 1000 / (performance.now() - t0);
+      fpsData.push(fps);
+
+      // Calculando el tiempo en dibujar los puntos o la triangulación
+      const t1 = performance.now();
       drawFaces(canvas, result, fps.toLocaleString());
+      const t2 = performance.now();
+      renderTimeData.push(t2 - t1);
+      
+      // Calcular 30 segundos desde t0
+      // if (performance.now() - globalTime > 30000) {
+      //   // Creamos el formato csv
+      //   const csvContent = `FPS,Time\n${fpsData.join(',')}\n${renderTimeData.join(',')}`;
+      //   appendLineToFile('./fps.csv', csvContent);
+      // }
       requestAnimationFrame(() => detectVideo(video, canvas));
       return true;
     })
