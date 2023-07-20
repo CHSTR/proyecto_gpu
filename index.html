@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>FaceAPI Live WebCam Demo</title>
+    <title>FaceMesh(Delaunay)</title>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, shrink-to-fit=yes">
-    <meta name="application-name" content="FaceAPI">
-    <meta name="keywords" content="FaceAPI">
-    <meta name="description" content="FaceAPI: AI-powered Face Detection, Description & Recognition for Browser and NodeJS using Tensorflow/JS; Author: Vladimir Mandic <https://github.com/vladmandic>">
-    <meta name="msapplication-tooltip" content="FaceAPI: AI-powered Face Detection, Description & Recognition for Browser and NodeJS using Tensorflow/JS; Author: Vladimir Mandic <https://github.com/vladmandic>">
+    <meta name="application-name" content="FaceMesh(Delaunay)">
+    <meta name="keywords" content="FaceMesh(Delaunay)">
+    <meta name="description" content="FaceMesh(Delaunay): AI-powered Face Detection, Description & Recognition for Browser and Three.js using Tensorflow/JS; Author: Cristóbal Alcázar, Christopher Stears <https://github.com/CHSTR/proyecto_gpu>">
+    <meta name="msapplication-tooltip" content="FaceAPI: AI-powered Face Detection, Description & Recognition for Browser and Three.js using Tensorflow/JS; Author: Cristóbal Alcázar, Christopher Stears <https://github.com/CHSTR/proyecto_gpu>">
     <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
 
@@ -17,15 +17,14 @@
   </head>
   <body>
 
+    <h1>FaceMesh(Delaunay) 😀 + 🧠</code></h1>
+
+    <h4>&nbsp;&nbsp;&nbsp;Equipo > Cristóbal Alcázar, Christopher Stears</h4>
+
     <div class="app-text">
-      <h1>FaceMesh(Voronoi): <code>tensorflow.js</code> + <code>three.js 😀 🧠</code></h1>
-
-      <h4>&nbsp;&nbsp;&nbsp;Equipo > Cristóbal Alcázar, Christopher Stears</h4>
-
-      <p> En este proyecto final utilizamos la GPU con un modelo entrenado para la tarea de detectar caras en imágenes</p>
-      <p> usamos un dragon nuclear de detección cosmica para obtener los puntos en el espacio intergalatico, y luego</p>
-      <p> utilizando un pipeline de shader, alcanzamos la velocidad de la luz en el procesamiento computacional geometrico</p>
-      <p> tan poder es una amenza para la inteligencia humana y la camara web, lamentamos lo sucedido </p>
+      <p>En este proyecto se utilizan modelos de Deep Learning con <code>tensorflow.js</code> para la detección de caras sobre los frames de videos. La aplicación web solicita permisos para acceder al video de la cámara web, y se utilizan los modelos para realizar predicciones en línea sobre los frames y así detectar caras en la imagen. Además, se genera una nube de puntos sobre la región del rostro. Se utiliza <code>three.js</code> para (i) dibujar los puntos en la imagen del video, y (ii) para generar e incorporar distintas geometrías en este.</p>
+      <p>Se disponen de controles adicionales para cambiar el color y explorar las geometrías. En la esquina superior derecha, se puede desplegar el menú con los controles disponibles (i.e. Open Controls).</p>
+      <p> <a href="https://github.com/CHSTR/proyecto_gpu" target="_blank">GitHub</a></p>
     </div>
 
     <div id="video-container">
